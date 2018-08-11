@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ws_Client</title>
+    <script src='https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js'></script>
+</head>
+	<button id='btn'>点击</button>
+<body>
+    <script>
+    var wsUrl = "ws://192.168.137.136:9501";
+    var ws = new WebSocket(wsUrl);
+    ws.onopen = function(event) {
+        ws.send('lvzhiwei');
+    };
+    // 
+    ws.onmessage = function(event) {
+        var data = event.data;
+        console.log(data);
+    };
+    ws.onclose = function(event) {
+        console.log('Client has closed.', event);
+    }
+
+    $('#btn').click(function(){
+    	console.log(22);
+    	ws.send('lvzhiwei');
+    });
+    </script>
+</body>
+
+</html>
