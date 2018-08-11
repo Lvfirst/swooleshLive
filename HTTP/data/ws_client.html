@@ -9,7 +9,7 @@
 	<button id='btn'>点击</button>
 <body>
     <script>
-    var wsUrl = "ws://192.168.137.136:9501";
+    var wsUrl = "ws://192.168.137.136:8811";
     var ws = new WebSocket(wsUrl);
     ws.onopen = function(event) {
         ws.send('lvzhiwei');
@@ -24,7 +24,7 @@
     }
 
     $('#btn').click(function(){
-    	console.log(22);
+    	// console.log(22);
     	ws.send('lvzhiwei');
     });
     </script>
