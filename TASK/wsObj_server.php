@@ -58,7 +58,7 @@ class Ws{
 		echo "Task Id:{$taskId}\n";
 		echo "finish received data '{$data}'".PHP_EOL;
 	}	
-
+	
 	public function onClose($serv,$fd)
 	{
 		echo "client {$fd} closed\n";
