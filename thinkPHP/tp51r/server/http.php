@@ -1,5 +1,8 @@
 <?php 
-$http=new swoole_http_server('0.0.0.0',8881);
+
+
+
+$http=new swoole_http_server('0.0.0.0',8811);
 // 配置访问静态文件
 $http->set(
 	[
@@ -55,9 +58,10 @@ $http->on('request',function($request,$response) use ($http){
             ->send();
     }catch (\Exception $e) {
         // todo
+        var_dump($e);
     }
     #因为是路径的问题 所以用路径这开始追朔
-    echo '-action-'.request()->action().PHP_EOL;
+    // echo '-action-'.request()->action().PHP_EOL;
     $con=ob_get_contents();
     ob_end_clean();
  
