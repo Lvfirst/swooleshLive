@@ -110,10 +110,12 @@ class Http{
     {
         // 处理这个task的方法,
         $method=$data['method'];
-        // task 投递过来的信息数据
+        // task 投递过来的信息数据 
+        
         $smsdata=$data['data'];
         // 处理task方法
         $obj=new app\common\lib\task\Task;
+
         $flag=$obj->$method($smsdata);
 
       /*  try {
