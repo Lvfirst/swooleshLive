@@ -190,3 +190,6 @@ class Ws{
 
 $ws=new Ws();
 $ws->start();
+// /root/swoole/swooleSaishi/thinkPHP/tp51r/server
+// 
+// --enable-async-redis  --enable-http2 --enable-openssl  --enable-mysqlnd  
