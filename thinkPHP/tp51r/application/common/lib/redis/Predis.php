@@ -49,6 +49,7 @@ class Predis
 
 		return $this->redis->setex($key,$time,$value);
 	}
+
 	public function get($key)
 	{
 		if(!$key)
@@ -58,6 +59,8 @@ class Predis
 
 		return $this->redis->get($key);
 	}
+	
+	
 	/**
 	 * [__call 其余方法则通过魔术方法调用即可]
 	 *
@@ -68,12 +71,17 @@ class Predis
 	 *
 	 * @return   [type]
 	 */
-	public function __call($name,$args)
+	public function __call($name,$arguments)
 	{
 		if(count($arguments) != 2) {
             return '';
         }
-
+        
         $this->redis->$name($arguments[0], $arguments[1]);			
 	}
+
+	public function sMembers($key)
+    {
+        return $this->redis->sMembers($key);
+    }
 }

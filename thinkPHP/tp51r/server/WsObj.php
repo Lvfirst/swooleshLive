@@ -18,12 +18,13 @@ class Ws{
             ]
         );
 
+        $this->serv->on('open',[$this,'onOpen']);
         $this->serv->on('WorkerStart',[$this,'onWorkerStart']);
         $this->serv->on('Request',[$this,'onRequest']);
         $this->serv->on('Task',[$this,'onTask']);
         $this->serv->on('Message',[$this,'onMessage']);
         $this->serv->on('Finish',[$this,'onFinish']);
-
+        $this->serv->on('close',[$this,'onClose']);
 
     }
 
@@ -32,6 +33,7 @@ class Ws{
     {
         // 定义应用目录
         define('APP_PATH', __DIR__ . '/../application/');
+        define('UPLOAD_PATH', __DIR__ . '/../public/');
         //请求应该在request里面执行
         // require __DIR__ . '/../thinkphp/start.php';
         // 加载框架文件
@@ -69,6 +71,12 @@ class Ws{
                 $_POST[$k] = $v;
             }
         }
+ 		$_FILES = []; //初始化空 解决变量为空
+        if(isset($request->files)) {
+            foreach($request->files as $k => $v) {
+                $_FILES[$k] = $v;
+            }
+        }        
         $_POST['http_server']=$this->serv;
         // 执行响应,这里是输出在了控制台
         // 可以从缓冲区获取内容
@@ -132,8 +140,6 @@ class Ws{
             $r=$ucpass->SendSms($templateid,$smsdata['code'],$smsdata['phone'],$uid);           
             $response=json_decode($r,true);
             print_r($response);
-            
-            
         } catch (\Exception $e) {
             // return app\common\lib\Util::show(config('code.error'), 'error');
         }  */
@@ -142,6 +148,25 @@ class Ws{
         // return 'on task finish'; //是否出发	
     }
 
+    /**
+     * [onOpen onOpen]
+     *
+     * @DateTime 2018-08-22
+     *
+     * @param    [type] $serv
+     * @param    [type] $request
+     *
+     * @return   [type]
+     */
+    public function onOpen($serv,$request)
+    {
+    	// 把用户连接的 redis 写入 fd
+    	// echo 'client Id is :'.$request->fd."\n";
+    	//  把fd 压入 redis 
+    	\app\common\lib\redis\Predis::getInstance()->sadd(config('redis.live_game_key'),$request->fd);
+
+    	$serv->push($request->fd,'lvzhiwei');
+    }
     /**
      * [onMessage 处理message]
      *
@@ -174,6 +199,21 @@ class Ws{
         echo "finish received data '{$data}'".PHP_EOL;
     }	
 
+    /**
+     * [onClose 处理 serv]
+     *
+     * @DateTime 2018-08-22
+     *
+     * @param    [type] $serv
+     * @param    [type] $fd
+     *
+     * @return   [type]
+     */
+    public function onClose($serv,$fd)
+    {
+    	// 当客户端断开连接  从 redis 把接入的fd 删除掉
+    	\app\common\lib\redis\Predis::getInstance()->srem(config('redis.live_game_key'),$fd);
+    }
     /**
      * [start start server]
      *
