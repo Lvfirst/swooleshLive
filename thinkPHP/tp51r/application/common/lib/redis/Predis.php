@@ -59,6 +59,24 @@ class Predis
 
 		return $this->redis->get($key);
 	}
+
+	/**
+	 * [del 删除键值]
+	 *
+	 * @DateTime 2018-08-23
+	 *
+	 * @return   [type]
+	 */
+	public function del($key)
+	{
+
+		if(!$key)
+		{
+			return '';
+		}
+
+		return $this->redis->del($key);
+	}
 	
 	
 	/**

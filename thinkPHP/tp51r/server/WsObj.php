@@ -18,6 +18,7 @@ class Ws{
             ]
         );
 
+        // $this->serv->on('start',[$this,'onStart']);
         $this->serv->on('open',[$this,'onOpen']);
         $this->serv->on('WorkerStart',[$this,'onWorkerStart']);
         $this->serv->on('Request',[$this,'onRequest']);
@@ -28,6 +29,15 @@ class Ws{
 
     }
 
+  //   public function onStart($serv)
+  //   {
+  //   	echo "swoole started\n";
+  //   	// $oldfds=\app\common\lib\redis\Predis::getInstance()->smembers(config('redis.live_game_key'));
+  //   	// if(!empty($oldfds))
+  //   	// {
+		// \app\common\lib\redis\Predis::getInstance()->del(config('redis.live_game_key'));
+  //   	// }
+  //   }
 
     public function onWorkerStart($serv,$workerId)
     {
@@ -76,7 +86,8 @@ class Ws{
             foreach($request->files as $k => $v) {
                 $_FILES[$k] = $v;
             }
-        }        
+        }   
+
         $_POST['http_server']=$this->serv;
         // 执行响应,这里是输出在了控制台
         // 可以从缓冲区获取内容
@@ -87,7 +98,7 @@ class Ws{
                 ->send();
         }catch (\Exception $e) {
             // todo
-            var_dump($e);
+            var_dump($e->getMessage());
         }
 
 
@@ -125,7 +136,7 @@ class Ws{
         // 处理task方法
         $obj=new app\common\lib\task\Task;
 
-        $flag=$obj->$method($smsdata);
+        $flag=$obj->$method($smsdata,$serv);
 
       /*  try {
 
@@ -165,7 +176,7 @@ class Ws{
     	//  把fd 压入 redis 
     	\app\common\lib\redis\Predis::getInstance()->sadd(config('redis.live_game_key'),$request->fd);
 
-    	$serv->push($request->fd,'lvzhiwei');
+    	// $serv->push($request->fd,'lvzhiwei');
     }
     /**
      * [onMessage 处理message]

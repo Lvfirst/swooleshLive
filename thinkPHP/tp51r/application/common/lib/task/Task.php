@@ -11,18 +11,18 @@ use app\common\lib\redis\Predis; //写入redis
 
 class Task
 {
-	/**
-	 * [sendSms 发送短信验证码]
-	 *
-	 * @DateTime 2018-08-19
-	 *
-	 * @param    [type] $data
-	 *
-	 * @return   [type]
-	 */
-	public function sendSms($data)
-	{
-		try {
+    /**
+     * [sendSms 发送短信验证码]
+     *
+     * @DateTime 2018-08-19
+     *
+     * @param    [type] $data
+     *
+     * @return   [type]
+     */
+    public function sendSms($data,$serv)
+    {
+        try {
             $options=[
                 'accountsid'=>'3c6bfb7871ed3008ba700e4654d30811',
                 'token'=>'43fc4570ab7c0c13b555e62d914f181c',
@@ -34,19 +34,49 @@ class Task
             $r=$ucpass->SendSms($templateid,$data['code'],$data['phone'],$uid);
 
             $response=json_decode($r,true);
-            
+
         } catch (\Exception $e) {
             return false;
         }  
 
-		if($response['code']=='000000')
-    	{
-    		// 把验证码写入redis
-    		 Predis::getInstance()->set(Redis::smsKey($data['phone']), $data['code'], config('redis.out_time'));
-    		 return true;
-    	} 
-		else {
-			return false;
-		}          
-	}
+        if($response['code']=='000000')
+        {
+            // 把验证码写入redis
+            Predis::getInstance()->set(Redis::smsKey($data['phone']), $data['code'], config('redis.out_time'));
+            return true;
+        } 
+        else {
+            return false;
+        }          
+    }
+
+    /**
+     * [pushLive 推送直播数据]
+     *
+     * @DateTime 2018-08-23
+     *
+     * @param    [type] $data
+     *
+     * @return   [type]
+     */
+    public function pushLive($data,$serv)
+    {
+
+        try {
+            $fds=Predis::getInstance()->smembers(config('redis.live_game_key'));
+            if(empty($fds))
+            {
+                return '';
+            }
+
+            foreach ($fds as  $fd) {
+
+                $serv->push($fd,json_encode($data));
+            }
+        } catch (\Exception $e) {
+
+            var_dump($e->getMessage(),$e->getLine(),$e->getFile());
+        }
+
+    }
 }
