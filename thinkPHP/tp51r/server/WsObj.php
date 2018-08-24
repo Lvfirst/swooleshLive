@@ -3,6 +3,7 @@ class Ws{
 
     const port='8811';
     const wsaddr="0.0.0.0"; 
+    const chartport='8812';
 
     private $serv=null;
 
@@ -17,6 +18,8 @@ class Ws{
                 'task_worker_num'=>2,
             ]
         );
+
+        $this->serv->listen(self::wsaddr,self::chartport,SWOOLE_SOCK_TCP);
 
         // $this->serv->on('start',[$this,'onStart']);
         $this->serv->on('open',[$this,'onOpen']);
@@ -171,10 +174,16 @@ class Ws{
      */
     public function onOpen($serv,$request)
     {
+    	// print_r($serv);
     	// 把用户连接的 redis 写入 fd
     	// echo 'client Id is :'.$request->fd."\n";
+    	var_dump($request->get['type']);
     	//  把fd 压入 redis 
-    	\app\common\lib\redis\Predis::getInstance()->sadd(config('redis.live_game_key'),$request->fd);
+    	if($request->get['type']!='chart')
+    	{
+    		// echo 1;
+    		\app\common\lib\redis\Predis::getInstance()->sadd(config('redis.live_game_key'),$request->fd);
+    	}
 
     	// $serv->push($request->fd,'lvzhiwei');
     }
